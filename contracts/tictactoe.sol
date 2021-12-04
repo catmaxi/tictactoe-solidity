@@ -36,6 +36,17 @@ contract Tictactoe {
         return gameList[_gameId];
     }
 
+
+    function getBoard(uint _gameId) public view returns (uint8[3][3] memory) {
+        return gameList[_gameId].board;
+    }
+
+    function getBoardItem(uint _gameId, uint8 _x, uint8 _y) public view returns (uint8 memory) {
+        return gameList[_gameId].board[_x][_y];
+    }
+
+
+
     function getGamePlayerNumber(uint _gameId, address _player) public view returns (uint8 playerNumber) {
         Game memory game = gameList[_gameId];
         if (game.player1 == _player) {
