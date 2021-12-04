@@ -30,28 +30,30 @@ contract Tictactoe {
         gameList = new Game[](100);
     }
 
-    function getGame(uint gameId) public view returns (Game game) {
-        return gameList[gameId];
+    function getGame(uint _gameId) public view returns (Game game) {
+        return gameList[_gameId];
     }
 
-    function getGamePlayerNumber(uint gameId) public view returns (uint8 playerNumber) {
-        Game game = gameList[gameId];
-        if (game.player1 == msg.sender) {
+    function getGamePlayerNumber(uint _gameId, address _player) public view returns (uint8 playerNumber) {
+        Game game = gameList[_gameId];
+        if (game.player1 == _player) {
             return 1;
-        } else if (game.player2 == msg.sender) {
+        } else if (game.player2 == _player) {
             return 2;
         } else {
+            revert("Player not found");
             return 0;
         }
     }
 
-    function getGamePlayerAddress(uint gameId, uint8 playerNumber) public view returns (address player) {
-        Game game = gameList[gameId];
-        if (playerNumber == 1) {
+    function getGamePlayerAddress(uint _gameId, uint8 _playerNumber) public view returns (address player) {
+        Game game = gameList[_gameId];
+        if (_playerNumber == 1) {
             return game.player1;
-        } else if (playerNumber == 2) {
+        } else if (_playerNumber == 2) {
             return game.player2;
         } else {
+            revert("Player not found");
             return 0;
         }
     }
@@ -82,12 +84,12 @@ contract Tictactoe {
     }
 
 
-    function joinGame(uint gameId) public returns (uint) {
-        require(gameId < gameList.length);
-        require(gameList[gameId].gameState == 0);
-        require(gameList[gameId].player2 == address(0));
+    function joinGame(uint _gameId) public returns (uint) {
+        require(_gameId < gameList.length);
+        require(gameList[_gameId].gameState == 0);
+        require(gameList[_gameId].player2 == address(0));
 
-        Game memory game = gameList[gameId];
+        Game memory game = gameList[_gameId];
 
         game.player2 = msg.sender;
         game.gameState = 1;
@@ -97,12 +99,12 @@ contract Tictactoe {
         return game.gameId;
     }
 
-    function startGame(uint gameId) public returns (uint) {
-        require(gameId < gameList.length);
-        require(gameList[gameId].gameState == 1);
-        require(gameList[gameId].player2 != address(0));
+    function startGame(uint _gameId) public returns (uint) {
+        require(_gameId < gameList.length);
+        require(gameList[_gameId].gameState == 1);
+        require(gameList[_gameId].player2 != address(0));
 
-        Game memory game = gameList[gameId];
+        Game memory game = gameList[_gameId];
 
         game.gameState = 2;
 
@@ -112,11 +114,11 @@ contract Tictactoe {
     }
 
 
-    function checkWin(uint gameId) public view returns (uint8 winner) {
-        require(gameId < gameList.length);
-        require(gameList[gameId].gameState == 2);
+    function checkWin(uint _gameId) public view returns (uint8 winner) {
+        require(_gameId < gameList.length);
+        require(gameList[_gameId].gameState == 2);
 
-        Game memory game = gameList[gameId];
+        Game memory game = gameList[_gameId];
 
         uint8[3][3] board = game.board;
 
@@ -148,13 +150,13 @@ contract Tictactoe {
 
     }
 
-    function move(uint gameId, uint8 playerNumber, uint8 x, uint8 y) public returns (uint) {
-        require(gameId < gameList.length);
-        require(gameList[gameId].gameState == 2);
-        require(gameList[gameId].player1 == msg.sender || gameList[gameId].player2 == msg.sender);
-        require(gameList[gameId].board[x][y] == 0);
+    function move(uint _gameId, uint8 playerNumber, uint8 x, uint8 y) public returns (uint) {
+        require(_gameId < gameList.length);
+        require(gameList[_gameId].gameState == 2);
+        require(gameList[_gameId].player1 == msg.sender || gameList[_gameId].player2 == msg.sender);
+        require(gameList[_gameId].board[x][y] == 0);
 
-        Game memory game = gameList[gameId];
+        Game memory game = gameList[_gameId];
 
         game.board[x][y] = playerNumber;
         game.stepsPlayed++;
@@ -173,12 +175,12 @@ contract Tictactoe {
     }
 
 
-    function quitGame(uint gameId) public returns (uint) {
-        require(gameId < gameList.length);
-        require(gameList[gameId].gameState == 2);
-        require(gameList[gameId].player1 == msg.sender || gameList[gameId].player2 == msg.sender);
+    function quitGame(uint _gameId) public returns (uint) {
+        require(_gameId < gameList.length);
+        require(gameList[_gameId].gameState == 2);
+        require(gameList[_gameId].player1 == msg.sender || gameList[_gameId].player2 == msg.sender);
 
-        Game memory game = gameList[gameId];
+        Game memory game = gameList[_gameId];
 
         game.gameState = 3;
         game.winner = 0;
