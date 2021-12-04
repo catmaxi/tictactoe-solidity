@@ -56,7 +56,7 @@ contract Tictactoe {
         return gameList[_gameId].board;
     }
 
-    function getBoardItem(uint _gameId, uint8 _x, uint8 _y) public view returns (uint8 memory) {
+    function getBoardItem(uint _gameId, uint8 _x, uint8 _y) public view returns (uint8) {
         return gameList[_gameId].board[_x][_y];
     }
 
@@ -152,8 +152,8 @@ contract Tictactoe {
 
         uint8[3][3] memory board = game.board;
 
-        uint8 x = 0;
-        uint8 y = 0;
+        // uint8 x = 0;
+        // uint8 y = 0;
 
         if (board[0][0] == board[0][1] && board[0][1] == board[0][2]) {
             winner = board[0][0];
@@ -247,12 +247,13 @@ contract Tictactoe {
         return game.gameId;
     }
 
-
-
-
     // fallback
     fallback() external payable {
         revert("Don't send money here");
     }
 
+    // receive ETH
+    receive() external payable {
+        revert("Don't send money here");
+    }
 }
