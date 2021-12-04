@@ -8,13 +8,28 @@ contract Tictactoe {
 
     
     struct Game {
+        // game Id (unique) increamenting from 0
         uint gameId;
+
+        // 3x3 board with 0,1,2 for empty, X, O
         uint8[3][3] board;
+
+        // 0 for X, 1 for O
         uint8 turn;
+
+        // 0 for not finished, 1 for player 1 win, 2 for player 2 win, 3 for draw
         uint8 winner;
+
+        // 0 for not started, 1 for started, 2 for paused, 3 for finished
         uint8 gameState;
+
+        // address of player 1
         address player1;
+
+        // address of player 2
         address player2;
+
+        // total number of moves played in the game
         uint stepsPlayed;
     }
 
