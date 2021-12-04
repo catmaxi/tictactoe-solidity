@@ -70,7 +70,6 @@ contract Tictactoe {
             return 2;
         } else {
             revert("Player not found");
-            // return 0;
         }
     }
 
@@ -82,7 +81,6 @@ contract Tictactoe {
             return game.player2;
         } else {
             revert("Player not found");
-            // return address(0);
         }
     }
 
@@ -142,6 +140,7 @@ contract Tictactoe {
     }
 
 
+    // this has not been tested
     function checkWin(uint _gameId) public view returns (uint8 winner) {
         require(_gameId < gameList.length);
         require(gameList[_gameId].gameState == 2);
