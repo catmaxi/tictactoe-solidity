@@ -20,7 +20,7 @@ contract Tictactoe {
         // 0 for not finished, 1 for player 1 win, 2 for player 2 win, 3 for draw
         uint8 winner;
 
-        // 0 for not started, 1 for started, 2 for paused, 3 for finished
+        // 0 for not started, 1 for joined, 2 for started, 3 for quit, 4 for finished
         uint8 gameState;
 
         // address of player 1
@@ -133,17 +133,20 @@ contract Tictactoe {
         Game memory game = gameList[_gameId];
 
         game.gameState = 2;
+        game.turn = 1;
 
         emit GameStarted(game.gameId);
 
         return game.gameId;
     }
 
+    
+
 
     // this has not been tested
     function checkWin(uint _gameId) public view returns (uint8 winner) {
         require(_gameId < gameList.length);
-        require(gameList[_gameId].gameState == 2);
+        // require(gameList[_gameId].gameState == 2);
 
         Game memory game = gameList[_gameId];
 
@@ -181,26 +184,51 @@ contract Tictactoe {
     // player number problem
     function move(uint _gameId, uint8 _playerNumber, uint8 x, uint8 y) public returns (uint) {
         require(_gameId < gameList.length);
-        require(gameList[_gameId].gameState == 2);
-        require(gameList[_gameId].player1 == msg.sender || gameList[_gameId].player2 == msg.sender);
-        require(gameList[_gameId].board[x][y] == 0);
 
         Game memory game = gameList[_gameId];
+
+        require(game.gameState == 2);
+
+        if (_playerNumber == 1) {
+            require(game.player1 == msg.sender);
+            require(game.turn == 1);
+        } else if (_playerNumber == 2) {
+            require(game.player2 == msg.sender);
+            require(game.turn == 2);
+        } else {
+            revert("Player not found");
+        }
+
+        // require(gameList[_gameId].player1 == msg.sender || gameList[_gameId].player2 == msg.sender);
+
+        require(gameList[_gameId].board[x][y] == 0);
 
         game.board[x][y] = _playerNumber;
         game.stepsPlayed++;
 
-        if (game.stepsPlayed == 9) {
-            game.gameState = 3;
-            game.winner = 0;
-        } else {
-            game.turn = 3 - game.turn;
-        }
-
         emit GameStep(game.gameId, _playerNumber, x, y, game.stepsPlayed);
 
-        return game.gameId;
+        uint8 winner = checkWin(_gameId);
 
+        // if no winner, switch turn
+        if (winner == 0) {
+            game.turn = 3 - _playerNumber;
+
+            if (game.stepsPlayed == 9) {
+                game.gameState = 4;
+                game.winner = 3;
+
+                emit GameFinished(game.gameId, winner, game.stepsPlayed);
+            }
+
+        } else {
+            game.winner = winner;
+            game.gameState = 4;
+
+            emit GameFinished(game.gameId, winner, game.stepsPlayed);
+        }
+
+        return game.gameId;
     }
 
 
