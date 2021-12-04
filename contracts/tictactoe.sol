@@ -5,6 +5,8 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 
 contract Tictactoe {
+
+    
     struct Game {
         uint gameId;
         uint8[3][3] board;
@@ -26,35 +28,35 @@ contract Tictactoe {
     event GameStep(uint gameId, uint8 playerNumber, uint8 x, uint8 y, uint step);
 
 
-    constructor() public {
-        gameList = new Game[](100);
+    constructor() {
+        
     }
 
-    function getGame(uint _gameId) public view returns (Game game) {
+    function getGame(uint _gameId) public view returns (Game memory) {
         return gameList[_gameId];
     }
 
     function getGamePlayerNumber(uint _gameId, address _player) public view returns (uint8 playerNumber) {
-        Game game = gameList[_gameId];
+        Game memory game = gameList[_gameId];
         if (game.player1 == _player) {
             return 1;
         } else if (game.player2 == _player) {
             return 2;
         } else {
             revert("Player not found");
-            return 0;
+            // return 0;
         }
     }
 
     function getGamePlayerAddress(uint _gameId, uint8 _playerNumber) public view returns (address player) {
-        Game game = gameList[_gameId];
+        Game memory game = gameList[_gameId];
         if (_playerNumber == 1) {
             return game.player1;
         } else if (_playerNumber == 2) {
             return game.player2;
         } else {
             revert("Player not found");
-            return 0;
+            // return address(0);
         }
     }
 
@@ -120,7 +122,7 @@ contract Tictactoe {
 
         Game memory game = gameList[_gameId];
 
-        uint8[3][3] board = game.board;
+        uint8[3][3] memory board = game.board;
 
         uint8 x = 0;
         uint8 y = 0;
@@ -150,7 +152,9 @@ contract Tictactoe {
 
     }
 
-    function move(uint _gameId, uint8 playerNumber, uint8 x, uint8 y) public returns (uint) {
+
+    // player number problem
+    function move(uint _gameId, uint8 _playerNumber, uint8 x, uint8 y) public returns (uint) {
         require(_gameId < gameList.length);
         require(gameList[_gameId].gameState == 2);
         require(gameList[_gameId].player1 == msg.sender || gameList[_gameId].player2 == msg.sender);
@@ -158,7 +162,7 @@ contract Tictactoe {
 
         Game memory game = gameList[_gameId];
 
-        game.board[x][y] = playerNumber;
+        game.board[x][y] = _playerNumber;
         game.stepsPlayed++;
 
         if (game.stepsPlayed == 9) {
@@ -168,7 +172,7 @@ contract Tictactoe {
             game.turn = 3 - game.turn;
         }
 
-        emit GameStep(game.gameId, playerNumber, x, y, game.stepsPlayed);
+        emit GameStep(game.gameId, _playerNumber, x, y, game.stepsPlayed);
 
         return game.gameId;
 
@@ -194,9 +198,8 @@ contract Tictactoe {
 
 
     // fallback
-    function() external payable {
-        revert();
+    fallback() external payable {
+        revert("Don't send money here");
     }
-
 
 }
