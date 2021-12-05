@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 
@@ -55,6 +55,14 @@ contract Tictactoe {
 
     function getBoardItem(uint _gameId, uint8 _x, uint8 _y) public view returns (uint8) {
         return gameList[_gameId].board[_x][_y];
+    }
+
+    function getTurn(uint _gameId) public view returns (uint8) {
+        return gameList[_gameId].turn;
+    }
+
+    function getStepsPlayed(uint _gameId) public view returns (uint) {
+        return gameList[_gameId].stepsPlayed;
     }
 
     function getGamePlayerNumber(uint _gameId, address _player) public view returns (uint8 playerNumber) {
@@ -113,6 +121,8 @@ contract Tictactoe {
         game.player2 = msg.sender;
         game.gameState = 1;
 
+        gameList[_gameId] = game;
+
         emit GameJoined(game.gameId, msg.sender, 2);
 
         return game.gameId;
@@ -127,6 +137,8 @@ contract Tictactoe {
 
         game.gameState = 2;
         game.turn = 1;
+
+        gameList[_gameId] = game;
 
         emit GameStarted(game.gameId);
 
@@ -176,8 +188,6 @@ contract Tictactoe {
             revert("Player not found");
         }
 
-        // require(gameList[_gameId].player1 == msg.sender || gameList[_gameId].player2 == msg.sender);
-
         require(gameList[_gameId].board[x][y] == 0);
 
         game.board[x][y] = _playerNumber;
@@ -205,6 +215,7 @@ contract Tictactoe {
             emit GameFinished(game.gameId, winner, game.stepsPlayed);
         }
 
+        gameList[_gameId] = game;
         return game.gameId;
     }
 
@@ -220,6 +231,7 @@ contract Tictactoe {
 
         emit GameFinished(game.gameId, game.winner, game.stepsPlayed);
 
+        gameList[_gameId] = game;
         return game.gameId;
     }
 
