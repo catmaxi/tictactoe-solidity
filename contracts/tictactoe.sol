@@ -43,9 +43,7 @@ contract Tictactoe {
     event GameStep(uint gameId, uint8 playerNumber, uint8 x, uint8 y, uint step);
 
 
-    constructor() {
-        
-    }
+    constructor() {}
 
     function getGame(uint _gameId) public view returns (Game memory) {
         return gameList[_gameId];
