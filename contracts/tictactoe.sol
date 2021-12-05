@@ -49,7 +49,6 @@ contract Tictactoe {
         return gameList[_gameId];
     }
 
-
     function getBoard(uint _gameId) public view returns (uint8[3][3] memory) {
         return gameList[_gameId].board;
     }
@@ -57,8 +56,6 @@ contract Tictactoe {
     function getBoardItem(uint _gameId, uint8 _x, uint8 _y) public view returns (uint8) {
         return gameList[_gameId].board[_x][_y];
     }
-
-
 
     function getGamePlayerNumber(uint _gameId, address _player) public view returns (uint8 playerNumber) {
         Game memory game = gameList[_gameId];
@@ -83,7 +80,6 @@ contract Tictactoe {
     }
 
 
-
     function createNewGame() public returns (uint) {
         Game memory game = Game({
             gameId: gameList.length,
@@ -106,7 +102,6 @@ contract Tictactoe {
 
         return game.gameId;
     }
-
 
     function joinGame(uint _gameId) public returns (uint) {
         require(_gameId < gameList.length);
@@ -138,9 +133,6 @@ contract Tictactoe {
         return game.gameId;
     }
 
-    
-
-
     // this has not been tested
     function checkWin(uint _gameId) public view returns (uint8 winner) {
         require(_gameId < gameList.length);
@@ -165,7 +157,6 @@ contract Tictactoe {
 
         return 0;
     }
-
 
     // player number problem
     function move(uint _gameId, uint8 _playerNumber, uint8 x, uint8 y) public returns (uint) {
@@ -216,7 +207,6 @@ contract Tictactoe {
 
         return game.gameId;
     }
-
 
     function quitGame(uint _gameId) public returns (uint) {
         require(_gameId < gameList.length);
