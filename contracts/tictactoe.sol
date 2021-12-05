@@ -149,35 +149,23 @@ contract Tictactoe {
         // require(gameList[_gameId].gameState == 2);
 
         Game memory game = gameList[_gameId];
-
         uint8[3][3] memory board = game.board;
 
-        // uint8 x = 0;
-        // uint8 y = 0;
+        // check rows
+        if (board[0][0] == board[0][1] && board[0][1] == board[0][2]) return board[0][0];
+        if (board[1][0] == board[1][1] && board[1][1] == board[1][2]) return board[1][0];
+        if (board[2][0] == board[2][1] && board[2][1] == board[2][2]) return board[2][0];
+    
+        // check columns
+        if (board[0][0] == board[1][0] && board[1][0] == board[2][0]) return board[0][0];
+        if (board[0][1] == board[1][1] && board[1][1] == board[2][1]) return board[0][1];
+        if (board[0][2] == board[1][2] && board[1][2] == board[2][2]) return board[0][2];
+        
+        // check diagonals
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) return board[0][0];  
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) return board[0][2];
 
-        if (board[0][0] == board[0][1] && board[0][1] == board[0][2]) {
-            winner = board[0][0];
-        } else if (board[1][0] == board[1][1] && board[1][1] == board[1][2]) {
-            winner = board[1][0];
-        } else if (board[2][0] == board[2][1] && board[2][1] == board[2][2]) {
-            winner = board[2][0];
-        } else if (board[0][0] == board[1][0] && board[1][0] == board[2][0]) {
-            winner = board[0][0];
-        } else if (board[0][1] == board[1][1] && board[1][1] == board[2][1]) {
-            winner = board[0][1];
-
-        } else if (board[0][2] == board[1][2] && board[1][2] == board[2][2]) {
-            winner = board[0][2];
-        } else if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-            winner = board[0][0];
-        } else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-            winner = board[0][2];
-        } else {
-            winner = 0;
-        }
-
-        return winner;
-
+        return 0;
     }
 
 
