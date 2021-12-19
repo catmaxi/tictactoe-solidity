@@ -45,6 +45,10 @@ contract Tictactoe {
 
     constructor() {}
 
+    function getGameListLength() public view returns(uint){
+        return gameList.length;
+    }
+
     function getGame(uint _gameId) public view returns (Game memory) {
         return gameList[_gameId];
     }
@@ -193,6 +197,8 @@ contract Tictactoe {
         game.board[x][y] = _playerNumber;
         game.stepsPlayed++;
 
+        gameList[_gameId] = game;
+
         emit GameStep(game.gameId, _playerNumber, x, y, game.stepsPlayed);
 
         uint8 winner = checkWin(_gameId);
@@ -215,7 +221,6 @@ contract Tictactoe {
             emit GameFinished(game.gameId, winner, game.stepsPlayed);
         }
 
-        gameList[_gameId] = game;
         return game.gameId;
     }
 
