@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract Tictactoe {
+import "hardhat/console.sol";
 
-    
+contract Tictactoe is Ownable {
     struct Game {
         // game Id (unique) increamenting from 0
         uint gameId;
@@ -35,13 +35,11 @@ contract Tictactoe {
 
     Game[] public gameList;
 
-
     event GameCreated(uint gameId);
     event GameJoined(uint gameId, address player, uint8 playerNumber);
     event GameStarted(uint gameId);
     event GameFinished(uint gameId, uint8 winner, uint stepsPlayed);
     event GameStep(uint gameId, uint8 playerNumber, uint8 x, uint8 y, uint step);
-
 
     constructor() {}
 
@@ -116,9 +114,9 @@ contract Tictactoe {
     }
 
     function joinGame(uint _gameId) public returns (uint) {
-        require(_gameId < gameList.length);
-        require(gameList[_gameId].gameState == 0);
-        require(gameList[_gameId].player2 == address(0));
+        require(_gameId < gameList.length, "Game not found");
+        require(gameList[_gameId].gameState == 0, "Game state is not 0");
+        require(gameList[_gameId].player2 == address(0), "Player already joined");
 
         Game memory game = gameList[_gameId];
 
@@ -133,9 +131,9 @@ contract Tictactoe {
     }
 
     function startGame(uint _gameId) public returns (uint) {
-        require(_gameId < gameList.length);
-        require(gameList[_gameId].gameState == 1);
-        require(gameList[_gameId].player2 != address(0));
+        require(_gameId < gameList.length, "Game not found");
+        require(gameList[_gameId].gameState == 1, "Game not joined");
+        require(gameList[_gameId].player2 != address(0), "Player 2 not found");
 
         Game memory game = gameList[_gameId];
 
@@ -149,13 +147,7 @@ contract Tictactoe {
         return game.gameId;
     }
 
-    // this has not been tested
-    function checkWin(uint _gameId) public view returns (uint8 winner) {
-        require(_gameId < gameList.length);
-        // require(gameList[_gameId].gameState == 2);
-
-        Game memory game = gameList[_gameId];
-        uint8[3][3] memory board = game.board;
+    function checkWin(uint8[3][3] memory board) public pure returns (uint8 winner) {
 
         // check rows
         if (board[0][0] == board[0][1] && board[0][1] == board[0][2]) return board[0][0];
@@ -174,44 +166,53 @@ contract Tictactoe {
         return 0;
     }
 
-    // player number problem
-    function move(uint _gameId, uint8 _playerNumber, uint8 x, uint8 y) public returns (uint) {
+    // this has not been tested
+    function checkWin(uint _gameId) public view returns (uint8 winner) {
         require(_gameId < gameList.length);
+        // require(gameList[_gameId].gameState == 2);
 
         Game memory game = gameList[_gameId];
 
-        require(game.gameState == 2);
+        return checkWin(game.board);
+    }
+
+    // player number problem
+    function move(uint _gameId, uint8 _playerNumber, uint8 x, uint8 y) public returns (uint) {
+        require(_gameId < gameList.length, "Game does not exist");
+
+        Game memory game = gameList[_gameId];
+
+        require(game.gameState == 2, "Game is not in progress");
 
         if (_playerNumber == 1) {
-            require(game.player1 == msg.sender);
+            require(game.player1 == msg.sender, "Player is not player 1");
             require(game.turn == 1);
         } else if (_playerNumber == 2) {
-            require(game.player2 == msg.sender);
+            require(game.player2 == msg.sender, "Player is not player 2");
             require(game.turn == 2);
         } else {
             revert("Player not found");
         }
 
-        require(gameList[_gameId].board[x][y] == 0);
+        require(gameList[_gameId].board[x][y] == 0, "Space is already taken");
 
         game.board[x][y] = _playerNumber;
         game.stepsPlayed++;
 
-        gameList[_gameId] = game;
-
         emit GameStep(game.gameId, _playerNumber, x, y, game.stepsPlayed);
 
-        uint8 winner = checkWin(_gameId);
+        uint8 winner = checkWin(game.board);
 
         if (winner == 0) {
-            // if no winner, switch turn
-            game.turn = 3 - _playerNumber;
 
             if (game.stepsPlayed == 9) {
                 game.gameState = 4;
                 game.winner = 3;
 
                 emit GameFinished(game.gameId, winner, game.stepsPlayed);
+            } else {
+                // if no winner, switch turn
+                game.turn = 3 - _playerNumber;
             }
 
         } else {
@@ -220,6 +221,8 @@ contract Tictactoe {
 
             emit GameFinished(game.gameId, winner, game.stepsPlayed);
         }
+
+        gameList[_gameId] = game;
 
         return game.gameId;
     }
