@@ -203,8 +203,8 @@ contract Tictactoe {
 
         uint8 winner = checkWin(_gameId);
 
-        // if no winner, switch turn
         if (winner == 0) {
+            // if no winner, switch turn
             game.turn = 3 - _playerNumber;
 
             if (game.stepsPlayed == 9) {
